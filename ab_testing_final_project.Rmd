@@ -1,0 +1,93 @@
+---
+title: "Udacity AB Testing Final Project"
+author: "Kara Leimberger"
+date: '2022-12-23'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Experiment Overview: Free Trial Screener (from Instructions)**
+
+At the time of this experiment, Udacity courses currently have two options on the course overview page: "start free trial", and "access course materials".
+
+- If the student clicks "start free trial", they will be asked to enter their credit card information, and then they will be enrolled in a free trial for the paid version of the course. After 14 days, they will automatically be charged unless they cancel first.
+
+- If the student clicks "access course materials", they will be able to view the videos and take the quizzes for free, but they will not receive coaching support or a verified certificate, and they will not submit their final project for feedback.
+
+In the experiment, Udacity tested a change where if the student clicked "start free trial", they were asked how much time they had available to devote to the course.
+
+- If the student indicated 5 or more hours per week, they would be taken through the checkout process as usual.
+
+- If they indicated fewer than 5 hours per week, a message would appear indicating that Udacity courses usually require a greater time commitment for successful completion, and suggesting that the student might like to access the course materials for free. At this point, the student would have the option to continue enrolling in the free trial, or access the course materials for free instead. This screenshot shows what the experiment looks like.
+
+The hypothesis was that this might set clearer expectations for students upfront, thus *reducing the number of frustrated students who left the free trial because they didn't have enough time — without significantly reducing the number of students to continue past the free trial and eventually complete the course*. If this hypothesis held true, Udacity could improve the overall student experience and improve coaches' capacity to support students who are likely to complete the course.
+
+The unit of diversion is a cookie, although if the student enrolls in the free trial, they are tracked by user-id from that point forward. The same user-id cannot enroll in the free trial twice. For users that do not enroll, their user-id is not tracked in the experiment, even if they were signed in when they visited the course overview page.
+
+Any place "unique cookies" are mentioned, the uniqueness is determined by day; that is, the same cookie visiting on different days would be counted twice. User-ids are automatically unique since the site does not allow the same user-id to enroll twice.
+
+*----------Everything below here reflects my approach to solving this problem----------*
+
+**Step 1: Understand experiment**
+
+First, let's sketch out the website flow to better understand the experiment - and, in particular, where this "free trial screener" question comes in. I created this flowchart by modifying a handy Figma template. Note that users in the control group will be able to enroll in the free trial without being interrupted by the screener question.
+
+![Experimental design flow chart](flow_chart.png "Flow chart of experiment, created in Figma"){width=1500px}
+
+**Step 2: Select metrics**
+
+The instructions asks us consider 6 different metrics and identify which would be useful 'invariant metrics' versus 'evaluation metrics'. Invariant metrics are metrics that we don't expect to differ between the control and the experiment groups; these metrics act as 'sanity checks' to make sure the groups are comparable. Evaluation metrics, on the other hand, are used to assess the effect of the experiment.
+
+In this case, our invariant metrics will be any metrics that are captured *before* users get to the free trial screener, which is the change of interest. Specifically, the invariant metrics will be:
+
+- **Number of cookies** = # of unique cookies to view the course overview page
+
+- **Number of user-ids** = # of users who enroll in the free trial
+
+- **Click-through-probability** = # of unique cookies to click the "Start free trial" button divided by number of unique cookies to view the course overview page
+
+And our evaluation metrics will be:
+
+- **Gross conversion** = # of user-ids to complete checkout and enroll in the free trial divided by number of unique cookies to click the "Start free trial" button
+
+- **Net conversion** = # of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by the number of unique cookies to click the "Start free trial" button
+
+- **Retention** = # of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by number of user-ids to complete checkout
+
+Finally, the following metric could potentially be an evaluation metric, but the lack of a denominator makes it less meaningful than the other metrics.
+
+- **Number of user-ids** = # of users who enroll in the free trial
+
+**Step 3: Refine predictions**
+
+From the Instructions, the stated 'hypothesis' - or goal - has two parts:
+
+1) **Reducing** the number of frustrated students who left the free trial because they didn't have enough time
+
+2) **Not reducing** the number of students to continue past the free trial and eventually complete the course
+
+How do each of these goals map onto our selected evaluation metrics?
+
+Well, if the screener effectively screens out the time-strapped students, then the proportion of students enrolling in the free trial - i.e., gross conversion - should **decrease** in the experiment group.
+
+However, we also need to consider the business perspective. We don't want the screener question to majorly reduce the number of students that complete the [paid] version of the course - we just want to preemptively filter out the students that will need to drop the course anyway. This business goal corresponds to the metrics that involve charging the credit card: net conversion and retention.
+
+If the time-strapped students have already filtered themselves out at an earlier step, then net conversion should **stay the same** in the experiment group.
+
+Lastly, if students who enrolled even after seeing the screener question have more time (and are less likely to cancel), then retention should  **increase**.
+
+*Note: I might argue that none of these metrics technically tell us why students leave the free trial within the 14-day window. But let's assume that if a student cancelled their free trial within 14 days, it was because they simply didn't have enough time (rather than other reasons, such as changes to their finances or career goals). And let's assume that not having enough time to complete the course makes them frustrated.*
+
+**Step 4: Measuring variability**
+
+
+
+**Step 5: Experiment sizing**
+
+
+
+The practical significance boundary for each metric, that is, the difference that would have to be observed before that was a meaningful change for the business, is given in parentheses. All practical significance boundaries are given as absolute changes.
+
