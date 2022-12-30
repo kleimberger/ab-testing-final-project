@@ -1,0 +1,8 @@
+metric,metric_denominator,metric_description,value
+number_cookies,NA,Unique cookies to view course overview page per day,40000
+number_clicks,NA,"Unique cookies to click ""Start free trial"" per day",3200
+number_user_enrollments,NA,Enrollments per day,660
+click_through_probability,number_cookies,"Click-through-probability on ""Start free trial""",0.08
+gross_conversion,number_clicks,"Probability of enrolling, given click",0.20625
+retention,number_user_enrollments,"Probability of payment, given enroll",0.53
+net_conversion,number_clicks,"Probability of payment, given click",0.1093125
