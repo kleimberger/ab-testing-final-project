@@ -1,7 +1,9 @@
 ---
 title: "Udacity AB Testing Final Project"
 author: "Kara Leimberger"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -27,7 +29,7 @@ In the experiment, Udacity tested a change where if the student clicked "start f
 
 - If they indicated fewer than 5 hours per week, a message would appear indicating that Udacity courses usually require a greater time commitment for successful completion, and suggesting that the student might like to access the course materials for free. At this point, the student would have the option to continue enrolling in the free trial, or access the course materials for free instead. This screenshot shows what the experiment looks like.
 
-The hypothesis was that this might set clearer expectations for students upfront, thus **reducing the number of frustrated students who left the free trial because they didn't have enough time — without significantly reducing the number of students to continue past the free trial and eventually complete the course**. If this hypothesis held true, Udacity could improve the overall student experience and improve coaches' capacity to support students who are likely to complete the course.
+The hypothesis was that this might set clearer expectations for students upfront, thus *reducing the number of frustrated students who left the free trial because they didn't have enough time — without significantly reducing the number of students to continue past the free trial and eventually complete the course*. If this hypothesis held true, Udacity could improve the overall student experience and improve coaches' capacity to support students who are likely to complete the course.
 
 The unit of diversion is a cookie, although if the student enrolls in the free trial, they are tracked by user-id from that point forward. The same user-id cannot enroll in the free trial twice. For users that do not enroll, their user-id is not tracked in the experiment, even if they were signed in when they visited the course overview page.
 
@@ -37,9 +39,13 @@ Any place "unique cookies" are mentioned, the uniqueness is determined by day; t
 
 ### Step 1: Experimental design
 
-First, let's sketch out the website flow to better understand the experimental design - and, in particular, where this "free trial screener" question comes in. I created this flowchart by modifying a handy Figma template. Note that users in the control group will be able to enroll in the free trial without being interrupted by the screener question.
+First, let's use Figma to sketch out the website flow and better understand the experimental design. In particular, we need to know where this "free trial screener" question comes in. Note that users in the control group will be able to enroll in the free trial without being interrupted by the screener question.
 
-![Experimental design flow chart](flow_chart.png "Flow chart of experiment, created in Figma"){width=1500px}
+```{r, out.width='7in', fig.cap='Experimental design flow chart', fig.pos='h', fig.align='center'}
+knitr::include_graphics("flow_chart.png")
+```
+
+<!-- ![Experimental design flow chart](flow_chart.png "Flow chart of experiment, created in Figma"){width=500px} -->
 
 ### Step 2: Select metrics
 
@@ -47,23 +53,23 @@ The instructions asks us consider 6 different metrics and identify which would b
 
 In this case, our invariant metrics will be any metrics that are captured *before* users get to the free trial screener, which is the change of interest. Specifically, the invariant metrics will be:
 
-- **Number of cookies:** number of unique cookies to view the course overview page
+- Number of cookies: number of unique cookies to view the course overview page
 
-- **Number of clicks:** number of unique cookies to click the "Start free trial" button
+- Number of clicks: number of unique cookies to click the "Start free trial" button
 
-- **Click-through-probability:** number of unique cookies to click the "Start free trial" button divided by number of unique cookies to view the course overview page
+- Click-through-probability: number of unique cookies to click the "Start free trial" button divided by number of unique cookies to view the course overview page
 
 And our evaluation metrics will be:
 
-- **Gross conversion:** number of user-ids to complete checkout and enroll in the free trial divided by number of unique cookies to click the "Start free trial" button (i.e., probability of enrolling, given click)
+- Gross conversion: number of user-ids to complete checkout and enroll in the free trial divided by number of unique cookies to click the "Start free trial" button (i.e., probability of enrolling, given click)
 
-- **Net conversion:** number of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by the number of unique cookies to click the "Start free trial" button (i.e., probability of payment, given click)
+- Net conversion: number of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by the number of unique cookies to click the "Start free trial" button (i.e., probability of payment, given click)
 
-- **Retention:** number of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by number of user-ids to complete checkout (i.e., probability of payment, given enroll)
+- Retention: number of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by number of user-ids to complete checkout (i.e., probability of payment, given enroll)
 
 Finally, the following metric could potentially be an evaluation metric, but the lack of a denominator makes it less meaningful than the other metrics.
 
-- **Number of user-id enrollments:** number of users who enroll in the free trial
+- Number of user-id enrollments: number of users who enroll in the free trial
 
 ### Step 3: Refine hypotheses
 
@@ -75,11 +81,11 @@ From the Instructions, the stated 'hypothesis' - or goal - has two parts:
 
 How do each of these goals map onto our selected evaluation metrics? Here are my hypotheses:
 
-- If the screener effectively screens out the time-strapped students, then **the proportion of students enrolling in the free trial - i.e., gross conversion - should decrease in the experiment group.**
+1. If the screener effectively screens out the time-strapped students, then *the proportion of students enrolling in the free trial - i.e., gross conversion - should decrease in the experiment group.*
 
-- If the time-strapped students have already filtered themselves out at an earlier step, then **net conversion should stay the same in the experiment group**. We don't want the screener question to majorly reduce the number of students that complete the [paid] version of the course; we just want to preemptively filter out the students that will need to drop the course anyway.
+2. If the time-strapped students have already filtered themselves out at an earlier step, then *net conversion should stay the same in the experiment group*. We don't want the screener question to majorly reduce the number of students that complete the [paid] version of the course; we just want to preemptively filter out the students that will need to drop the course anyway.
 
-- If students who enrolled even after seeing the screener question have sufficient time to complete the course (and are therefore less likely to cancel), then **retention should  increase in the experiment group.**
+3. If students who enrolled even after seeing the screener question have sufficient time to complete the course (and are therefore less likely to cancel), then *retention should  increase in the experiment group.*
 
 *Note: here we assume that if a student cancelled their free trial within 14 days, it was because they simply didn't have enough time. However, I'd argue that none of these metrics actually tell us WHY students leave the free trial within the 14-day window; for instance, maybe they have changes to their finances or career goals. If we only observe a modest experimental effect, I suspect it might be due to these alternate reasons.*
 
@@ -232,11 +238,11 @@ from Instructions: If the invariant metric is a simple count that should be rand
 
 Our invariant metrics are:
 
-- **Number of cookies** = # of unique cookies to view the course overview page
+- Number of cookies = # of unique cookies to view the course overview page
 
-- **Number of clicks** = # of unique cookies to click the "Start free trial" button
+- Number of clicks = # of unique cookies to click the "Start free trial" button
 
-- **Click-through-probability** = # of unique cookies to click the "Start free trial" button divided by number of unique cookies to view the course overview page
+- Click-through-probability = # of unique cookies to click the "Start free trial" button divided by number of unique cookies to view the course overview page
 
 For number of cookies and number of clicks, will use a binomial test. Because each cookie is randomly assigned with a probability of 0.5, the confidence interval should be centered around 0.5.
 ```{r}
@@ -319,9 +325,9 @@ from Instructions: for your evaluation metrics, calculate a confidence interval 
 
 Here are the evaluation metrics:
 
-- **Gross conversion** = # of user-ids to complete checkout and enroll in the free trial divided by number of unique cookies to click the "Start free trial" button (i.e., probability of enrolling, given click)
+- Gross conversion = # of user-ids to complete checkout and enroll in the free trial divided by number of unique cookies to click the "Start free trial" button (i.e., probability of enrolling, given click)
 
-- **Net conversion** = # of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by the number of unique cookies to click the "Start free trial" button (i.e., probability of payment, given click)
+- Net conversion = # of user-ids to remain enrolled past the 14-day boundary (and thus make at least one payment) divided by the number of unique cookies to click the "Start free trial" button (i.e., probability of payment, given click)
 
 ```{r}
 #Calculate total number of clicks, enrollments, and payments in each group -- but do not include data from the last two weeks (where there are clicks but not enrollments or payments) 
@@ -334,7 +340,7 @@ conversion_sum <- data %>%
 ```
 
 Gross conversion
-```{r}
+```{r, out.width='4in', fig.cap='Results for gross conversion', fig.pos='h', fig.align='center'}
 #Calculate observed p, pooled across groups (here, p = enrollments/clicks)
 gross_conversion_pooled <- conversion_sum %>%
   summarise(across(c(enrollments, clicks), list(total = sum))) %>% 
@@ -384,7 +390,7 @@ click_through_proptest #prop1 = experiment, prop2 = control
 ```
 
 Net conversion
-```{r}
+```{r, out.width='4in', fig.cap='Results for net conversion', fig.pos='h', fig.align='center'}
 #Calculate observed p, pooled across groups (here, p = enrollments/clicks)
 net_conversion_pooled <- conversion_sum %>%
   summarise(across(c(payments, clicks), list(total = sum))) %>% 
@@ -456,10 +462,11 @@ binom.test(sum(data_for_sign_test$nc_success), length(data_for_sign_test$nc_succ
 
 These results correspond with previous results, but if they didn't I might start by plotting the metrics over time - especially since the data collection period includes a holiday (Halloween). Interestingly, the only time that experimental gross conversion only surpasses the control group on Halloween and the 3 previous days (highlighted in blue).
 
-```{r}
+```{r, out.width='6in', out.height='6in', fig.cap='A bit of data exploration (metrics over time)', fig.pos='h', fig.align='center'}
 data_to_plot <- data %>%
   separate(col = "date", into = c("day", "date"), sep = ", ") %>%
   mutate(date = as.Date(date, "%b %e")) %>%
+  mutate(date = format(date, format="%m-%d")) %>%
   filter(!is.na(gross_conversion)) %>%
   select(group, day, date, gross_conversion, net_conversion) %>%
   pivot_longer(cols = c(gross_conversion, net_conversion), names_to = "metric", values_to = "value") %>%
@@ -467,15 +474,16 @@ data_to_plot <- data %>%
   mutate(group = factor(group, levels = c("control", "experiment"), labels = c("Control", "Experiment")))
 
 ggplot(data_to_plot, aes(x = date, y = value, group = group, colour = group)) + 
-  annotate("rect", xmin = as.Date("2022-10-28"), xmax = as.Date("2022-10-31"), ymin = 0, ymax = 0.5, alpha = 0.25, fill = "blue") +
+  annotate("rect", xmin = "10-28", xmax = "10-31", ymin = 0, ymax = 0.5, alpha = 0.25, fill = "blue") +
   geom_point(size = 2.5) +
   geom_line(aes(linetype = group), size = 1) +
   facet_grid(metric ~ .) +
-  theme_bw(base_size = 18) +
+  theme_bw(base_size = 14) +
   theme(panel.grid.major = element_blank(),
         strip.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
-        legend.position="bottom") +
+        legend.position="bottom",
+        axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
   scale_color_manual(values = c("grey20", "darkorchid")) +
   labs(x = "Date", y = "Value", colour = "Group", linetype = "Group") +
   ylim(0, 0.5) 
@@ -483,12 +491,14 @@ ggplot(data_to_plot, aes(x = date, y = value, group = group, colour = group)) +
 
 ### Step 7: Make a recommendation
 
-from Instructions: Would you launch this experiment, not launch it, dig deeper, run a follow-up experiment, or is it a judgment call? If you would dig deeper, explain what area you would investigate. If you would run follow-up experiments, briefly describe that experiment. If it is a judgment call, explain what factors would be relevant to the decision.
+Summary of results:
 
 - As predicted, the screener question does discourage students from enrolling in the free trial, since gross conversion (enrollments/clicks) was lower in the experimental group (mean difference: -0.0206, 95% CI: -0.0291 to -0.0120). This difference surpasses the practical significance value (-0.01).
 
 - I also found no evidence that this screening effect led to statistically significant decreases in net conversion. However, confidence intervals encompassed a wide range of possible effects (95% CI: -0.011 to 0.0019), I so I cannot rule out declines in net conversion greater than acceptable practical difference (-0.0075).
 
-I would therefore suggest **not** launching the experiment at this time. If time allowed, I would try to figure out why net conversion showed such a large range of possible effects. For example, I would try subsetting (slicing) the data to graphically explore whether certain audiences (e.g., countries) were showing more extreme experimental effects and thus contributing to wide confidence intervals we observed. If so, we might consider implementing the screener feature only in the countries that showed minimal effects on net conversion (likely after repeating the experiment in those groups with proper experiment sizing and power to detect an effect).
+Recommendation:
+
+I would suggest **not** launching the experiment at this time. If time allowed, I would try to figure out why net conversion showed such a large range of possible effects. For example, I would try subsetting (slicing) the data to graphically explore whether certain audiences (e.g., countries) were showing more extreme experimental effects and thus contributing to wide confidence intervals we observed. If so, we might consider implementing the screener feature only in the countries that showed minimal effects on net conversion (likely after repeating the experiment in those groups with proper experiment sizing and power to detect an effect).
 
 
